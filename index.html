@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>سبحة اليوم — Tasbih</title>
+  <style>
+    :root{
+      --bg: #0f172a;        /* slate-900 */
+      --card: #111827;      /* gray-900 */
+      --ink: #e5e7eb;       /* gray-200 */
+      --muted: #9ca3af;     /* gray-400 */
+      --accent: #4ade80;    /* green-400 */
+      --accent-2:#16a34a;   /* green-600 */
+      --btn:#1f2937;        /* gray-800 */
+      --ring:#22c55e;       /* green-500 */
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                   Arial, "Noto Sans", "Tajawal", "Cairo", "Apple Color Emoji",
+                   "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      background:
+        radial-gradient(1200px 600px at 100% -10%, #052e16 0%, transparent 60%),
+        radial-gradient(1000px 500px at -10% 110%, #0a2a43 0%, transparent 60%),
+        var(--bg);
+      color: var(--ink);
+      -webkit-tap-highlight-color: transparent;
+    }
+    header{
+      position: sticky; top:0; z-index: 3;
+      backdrop-filter: saturate(140%) blur(10px);
+      background: linear-gradient(180deg, rgba(15,23,42,.85) 0%, rgba(15,23,42,.55) 100%);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .wrap{
+      max-width: 1100px; margin-inline:auto; padding: 14px 18px;
+    }
+    .title{
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    }
+    .title h1{
+      margin:0; font-size: 1.35rem; letter-spacing:.3px;
+    }
+    .date{
+      margin-inline-start:auto; font-size:.95rem; color: var(--muted);
+      display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;
+    }
+    .tz-badge{
+      font-size:.75rem; color:#cbd5e1; border:1px solid rgba(255,255,255,.1);
+      padding:.15rem .5rem; border-radius: 999px;
+    }
+    main{padding: 18px}
+    .grid{
+      max-width: 1100px; margin: 0 auto;
+      display:grid; gap:14px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px; display:flex; flex-direction:column; gap:12px;
+      min-height: 170px; position: relative; overflow: clip;
+      transition: transform .06s ease;
+    }
+    .card:active{ transform: scale(.995) }
+    .dhikr{
+      margin:0; font-weight:700; line-height:1.4; font-size: 1.05rem;
+      text-wrap: balance;
+    }
+    .meta{
+      display:flex; align-items:center; gap:10px; justify-content: space-between;
+    }
+    .count{
+      font-variant-numeric: tabular-nums;
+      font-size: 2.25rem; font-weight:800; line-height:1;
+      letter-spacing:.5px;
+    }
+    .remain-label{ color: var(--muted); font-size:.9rem }
+    .bar{
+      height: 6px; width: 100%;
+      background: rgba(255,255,255,.06);
+      border-radius: 999px; overflow:hidden;
+      border:1px solid rgba(255,255,255,.07)
+    }
+    .bar > i{
+      display:block; height:100%; width:0%;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+      border-radius: 999px; transition: width .25s ease;
+    }
+    .actions{
+      margin-top: 4px;
+      display:flex; align-items:center; gap:10px;
+    }
+    button.tasbih{
+      flex: 1 1 auto;
+      appearance:none; border:1px solid rgba(255,255,255,.08);
+      background: radial-gradient(110% 180% at 50% -20%, rgba(34,197,94,.25), transparent 60%) , var(--btn);
+      color: var(--ink); font-weight:700; letter-spacing:.3px;
+      padding: 12px 14px; border-radius: 14px; cursor:pointer;
+      font-size: 1.05rem;
+      touch-action: manipulation;
+      transition: box-shadow .15s ease, transform .06s ease;
+    }
+    button.tasbih:active{ transform: translateY(1px) }
+    button.tasbih:focus-visible{
+      outline: 3px solid var(--ring); outline-offset: 2px;
+    }
+    .pill{
+      font-size:.8rem; padding:.35rem .55rem; border-radius:999px;
+      border:1px solid rgba(255,255,255,.1); color:#cbd5e1;
+      background: rgba(255,255,255,.03);
+    }
+    footer{
+      max-width: 1100px; margin: 18px auto 26px; color: var(--muted);
+      font-size:.9rem; text-align:center; padding: 0 18px;
+    }
+    .done{
+      position:absolute; inset:auto 10px 10px auto;
+      font-size:.75rem; background: rgba(34,197,94,.18);
+      color:#bbf7d0; border:1px solid rgba(34,197,94,.35);
+      padding:.2rem .5rem; border-radius:999px; display:none;
+    }
+    .card.is-complete .done{ display:block }
+    @media (min-width: 480px){
+      .count{ font-size: 2.6rem }
+      .dhikr{ font-size: 1.1rem }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">
+        <h1>سبحة اليوم</h1>
+        <div class="date">
+          <span id="todayText" aria-live="polite"></span>
+          <span class="tz-badge">توقيت الرياض</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="grid" id="cards" aria-label="أنواع التسبيح"></section>
+  </main>
+
+  <footer>
+    يُحفَظ التقدّم يوميًا على متصفحك (محليًا). يبدأ كل نوع من التسبيح بـ
+    <b>١٠٠</b> مرة يوميًا، وينقص مع كل نقرة. عند بدء يوم جديد، تُعاد العدّادات تلقائيًا إلى ١٠٠.
+  </footer>
+
+  <script>
+    // ------- Config -------
+    const TASBIH_TYPES = [
+      "سبحان الله",
+      "الحمد لله",
+      "الله اكبر",
+      "لا حول ولا قوة الا بالله",
+      "لا اله الا الله",
+      "سبحان الله و بحمده",
+      "سبحان الله العظيم",
+      "اللهم صلي علي محمد و علي ال محمد كما صليت علي ابراهيم وعلي ال ابراهيم"
+    ];
+    const DAILY_TARGET = 100;
+    const STORAGE_KEY = "tasbihCountsV1";
+    const TIMEZONE = "Asia/Riyadh";
+
+    // ------- Date helpers (respect Riyadh timezone) -------
+    const keyFormatter = new Intl.DateTimeFormat("en-CA", {
+      timeZone: TIMEZONE, year: "numeric", month: "2-digit", day: "2-digit"
+    });
+    const arabicDate = new Intl.DateTimeFormat("ar-SA", {
+      timeZone: TIMEZONE, dateStyle: "full"
+    });
+
+    function todayKey(){ return keyFormatter.format(new Date()); }
+    function todayLabel(){ return arabicDate.format(new Date()); }
+
+    // ------- State -------
+    let STATE = loadState();    // { "YYYY-MM-DD": { [tasbih]: remainingNumber } }
+    let ACTIVE_KEY = todayKey();
+
+    // Ensure today's bucket exists and every type is initialized
+    function ensureToday(){
+      const k = todayKey();
+      if (!STATE[k]) STATE[k] = {};
+      TASBIH_TYPES.forEach(t => {
+        if (typeof STATE[k][t] !== "number") STATE[k][t] = DAILY_TARGET;
+      });
+      ACTIVE_KEY = k;
+      saveState();
+    }
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : {};
+        return parsed && typeof parsed === "object" ? parsed : {};
+      }catch{
+        return {};
+      }
+    }
+    function saveState(){
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); }catch{}
+    }
+
+    // ------- UI -------
+    const cardsEl = document.getElementById("cards");
+    const todayTextEl = document.getElementById("todayText");
+
+    function createCard(dhikr){
+      const card = document.createElement("article");
+      card.className = "card";
+      card.setAttribute("data-type", dhikr);
+
+      card.innerHTML = `
+        <div class="done" aria-hidden="true">اكتمل اليوم ✅</div>
+        <h2 class="dhikr">${dhikr}</h2>
+        <div class="meta">
+          <div>
+            <div class="remain-label">المتبقي اليوم</div>
+            <div class="count" aria-live="polite" aria-atomic="true">—</div>
+          </div>
+          <span class="pill" title="الهدف اليومي">${DAILY_TARGET} / يوم</span>
+        </div>
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${DAILY_TARGET}" aria-valuenow="0">
+          <i></i>
+        </div>
+        <div class="actions">
+          <button type="button" class="tasbih" aria-label="انقُر لإنقاص العدّاد">تسبيح</button>
+        </div>
+      `;
+
+      const btn = card.querySelector("button.tasbih");
+      btn.addEventListener("click", () => handleClick(dhikr, card));
+      // Also allow tapping the whole card (except when pressing the button already)
+      card.addEventListener("click", (e) => {
+        if (e.target === btn) return; // already handled
+        handleClick(dhikr, card);
+      });
+
+      return card;
+    }
+
+    function renderCard(card){
+      const dhikr = card.getAttribute("data-type");
+      const remain = Math.max(0, Number(STATE[ACTIVE_KEY]?.[dhikr] ?? DAILY_TARGET));
+      const countEl = card.querySelector(".count");
+      const bar = card.querySelector(".bar i");
+      const barWrap = card.querySelector(".bar");
+      const doneBadge = card.querySelector(".done");
+
+      countEl.textContent = remain.toLocaleString("ar-SA");
+      const progress = ((DAILY_TARGET - remain) / DAILY_TARGET) * 100;
+      bar.style.width = `${progress}%`;
+      barWrap.setAttribute("aria-valuenow", String(DAILY_TARGET - remain));
+
+      if (remain === 0){
+        card.classList.add("is-complete");
+      }else{
+        card.classList.remove("is-complete");
+      }
+      doneBadge.style.display = remain === 0 ? "block" : "none";
+    }
+
+    function renderAll(){
+      todayTextEl.textContent = todayLabel();
+      // Build once
+      if (!cardsEl.childElementCount){
+        const frag = document.createDocumentFragment();
+        TASBIH_TYPES.forEach(t => frag.appendChild(createCard(t)));
+        cardsEl.appendChild(frag);
+      }
+      // Update all
+      cardsEl.querySelectorAll(".card").forEach(renderCard);
+    }
+
+    function handleClick(dhikr, card){
+      ensureToday(); // protects against midnight change while page is open
+      const remain = STATE[ACTIVE_KEY][dhikr];
+      if (remain <= 0){
+        flash(card, true);
+        vibrate([10, 40, 10]);
+        return;
+      }
+      STATE[ACTIVE_KEY][dhikr] = remain - 1;
+      saveState();
+      renderCard(card);
+      flash(card, false);
+      vibrate(12);
+    }
+
+    function flash(card, blocked){
+      card.animate(
+        blocked
+          ? [{ backgroundColor: "transparent" }, { backgroundColor: "rgba(239,68,68,.18)" }, { backgroundColor: "transparent" }]
+          : [{ boxShadow: "0 0 0 0 rgba(34,197,94,.0)" }, { boxShadow: "0 0 0 6px rgba(34,197,94,.18)" }, { boxShadow: "0 0 0 0 rgba(34,197,94,.0)" }],
+        { duration: 260, easing: "ease-out" }
+      );
+    }
+
+    function vibrate(pattern){
+      if (!("vibrate" in navigator)) return;
+      try{ navigator.vibrate(pattern); }catch{}
+    }
+
+    // Midnight rollover watcher (Riyadh time)
+    let lastKey = todayKey();
+    setInterval(() => {
+      const k = todayKey();
+      if (k !== lastKey){
+        // Day changed -> ensure new day data & refresh
+        STATE = loadState();
+        ensureToday();
+        lastKey = k;
+        renderAll();
+      }
+    }, 30_000); // check every 30s
+
+    // First run
+    ensureToday();
+    renderAll();
+  </script>
+</body>
+</html>
